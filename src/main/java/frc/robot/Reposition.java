@@ -32,12 +32,12 @@ public class Reposition {
     public void LimeLightReposition() {
       
         if (limelight.getdegRotationToTarget() < -1.5){
-          drive.LeftDrive(.15);
-          drive.RightDrive(.15);
-
-        }else if(limelight.getdegRotationToTarget() > 1.5){
           drive.LeftDrive(-.15);
           drive.RightDrive(-.15);
+
+        }else if(limelight.getdegRotationToTarget() > 1.5){
+          drive.LeftDrive(.15);
+          drive.RightDrive(.15);
         } else if (limelight.getdegRotationToTarget() > -1.5 && limelight.getdegRotationToTarget() < 1.5) {
           drive.LeftDrive(0);
           drive.RightDrive(0);

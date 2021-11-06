@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 /**
@@ -27,23 +30,43 @@ public class Drive {
     TalonSRX rightDrive1;
     TalonSRX rightDrive2;
 
+    List<TalonSRX> motors;
+
     public Drive() {
         leftDrive1 = new TalonSRX(0);
         leftDrive2 = new TalonSRX(1);
         rightDrive1 = new TalonSRX(14);
         rightDrive2 = new TalonSRX(15);
+        
+        rightDrive2.follow(rightDrive1);
+        leftDrive2.follow(leftDrive1);
+
+        //leftDrive1.configVoltageCompSaturation(12.0, 10);
+        //leftDrive1.enableVoltageCompensation(true);
+
+        //configureTalon(leftDrive1, true, true);
+        //motors = Arrays.asList(leftDrive1, leftDrive2, rightDrive1, rightDrive2);
+        /*
+        for (TalonSRX m : motors) {
+            m.configFactoryDefault();
+        }
+        */
     }
+/*
+    private void configureTalon(TalonSRX talonSRX, boolean left, boolean master) {
+        talonSRX.setInverted(!left);
+        talonSRX.enableVoltageCompensation(true);
+    }
+*/
 
     public void RightDrive(double input){
-        rightDrive2.follow(rightDrive1);
-        //rightDrive2.set(ControlMode.PercentOutput, input);
-        rightDrive1.set(ControlMode.PercentOutput, input);
+        rightDrive2.set(ControlMode.PercentOutput, input * 0.8);
+        rightDrive1.set(ControlMode.PercentOutput, input * 0.8);
     }
     
     public void LeftDrive (double input) {
-        leftDrive2.follow(leftDrive1);
-        leftDrive1.set (ControlMode.PercentOutput, -input);
-        //leftDrive2.set(ControlMode.PercentOutput, input);
+        leftDrive1.set (ControlMode.PercentOutput, -input * 0.8);
+        leftDrive2.set(ControlMode.PercentOutput, -input * 0.8);
     }
 
      

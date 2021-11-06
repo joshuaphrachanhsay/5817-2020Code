@@ -43,7 +43,7 @@ public class ColorSensor {
     Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
-    VictorSP getSwolChang = new VictorSP(0);
+    VictorSP getSwolChang = new VictorSP(1);
 
     public ColorSensor() {
         

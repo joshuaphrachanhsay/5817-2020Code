@@ -8,9 +8,12 @@
 package frc.robot;
  
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ControlMode.LedMode;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -37,6 +40,10 @@ public class Robot extends TimedRobot {
   private Tail tail = Tail.getInstance();
   private Position position = Position.LOW;
   private State state = State.DRIVE;
+ 
+
+
+
 
   /**
    * This function is run when the robot is first started up and should be
@@ -47,7 +54,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
- 
+  
     //shooter.motionMagic();
     SmartDashboard.putNumber("YLeft", controller.getYLeftDriver());
   }
@@ -73,9 +80,24 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("XLeft", controller.getXLeftDriver());
     SmartDashboard.putNumber("YRight", controller.getYRightDriver());
     SmartDashboard.putNumber("XRight", controller.getXRightDriver());
+    SmartDashboard.putBoolean("BallDetectShot", photosensor.ballDetectShot);
+    SmartDashboard.putBoolean("BallDetect", photosensor.ballDetect);
     colorSensor.senseColor();
-    //photosensor.PhotosensorCount();
-  }
+   // photosensor.PhotosensorCount();
+
+   
+
+
+
+
+
+
+  
+  } 
+     
+
+    
+  
  
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -88,11 +110,11 @@ public class Robot extends TimedRobot {
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
+  private double times;
   @Override
+   
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    times = Timer.getFPGATimestamp();
    
   }
  
@@ -101,19 +123,77 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        //shooter.shooterControl(0.25);
- 
-        break;
- 
+   /* double time = Timer.getFPGATimestamp();
+    if(time-times<5){
+      drive.LeftDrive(0.25);
+      drive.RightDrive(0.25);
     }
-  }
+    else if(time-times<6){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<7){
+      drive.LeftDrive(-0.29);
+      drive.RightDrive(0.29);
+    }
+    else if(time-times<11){
+      drive.LeftDrive(0.25);
+      drive.RightDrive(0.25);
+    }
+    else if(time-times<12){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<13){
+      drive.LeftDrive(0.25);
+      drive.RightDrive(-0.25); 
+    }
+    else if(time-times<16){
+      drive.LeftDrive(0.3);
+      drive.RightDrive(0.3);
+    }
+    else if(time-times<17){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<23){
+      drive.LeftDrive(-0.24);
+      drive.RightDrive(-0.26);
+    }
+    else if(time-times<24){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<25){
+      drive.LeftDrive(-0.26);
+      drive.RightDrive(0.26);
+    }
+    else if(time-times<29){
+      drive.LeftDrive(-0.25);
+      drive.RightDrive(-0.26);
+    }
+    else if(time-times<30){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<31){
+      drive.LeftDrive(0.25);
+      drive.RightDrive(-0.25);
+    }
+    else if(time-times<32){
+      drive.LeftDrive(0);
+      drive.RightDrive(-0);
+    }
+    else if(time-times<34){
+      drive.LeftDrive(-0.25);
+      drive.RightDrive(-0.25);
+    }
+    else
+    {
+      drive.LeftDrive(0);
+      drive.RightDrive(0);
+    } */
+  } 
  
   /**
    * This function is called periodically during operator control.
@@ -125,6 +205,7 @@ public class Robot extends TimedRobot {
     
     if(controller.getRightTriggerDriver() > 0.1){
       shooter.shooterControl(0.35);
+      conveyor.shooterConveyorControl(0.7);
     } else {
       shooter.shooterControl(0);
     }
@@ -136,10 +217,11 @@ public class Robot extends TimedRobot {
     } else if (controller.getButtonACoDriver()) {
         while(controller.getButtonACoDriver() == true) {
           shooter.angle(-0.1);
-        }
+    }
+
     } else {
       shooter.angle(0);
-    }
+    } 
 
 
     if (controller.getButtonYDriver()){
@@ -190,7 +272,10 @@ public class Robot extends TimedRobot {
       } 
       break;
 
-      case AIM:
+    case AIM:
+
+    //YLeft is the distance the left stick is pushed on the verticle end.
+    //XRight is the distance the right stick is pushed on the horizontal end
       if (controller.getYLeftDriver() > controllerJoystickDeadzone){
         drive.RightDrive((controller.getYLeftDriver() - (controller.getXRightDriver()*0.5))*0.5);
         drive.LeftDrive((controller.getYLeftDriver() + (controller.getXRightDriver()*0.5))*0.5);
@@ -200,6 +285,8 @@ public class Robot extends TimedRobot {
       }else if(controller.getXRightDriver() < controllerJoystickDeadzone *(-1) || controller.getXRightDriver() > controllerJoystickDeadzone){
         drive.RightDrive((controller.getXRightDriver()*(-1))*0.25);
         drive.LeftDrive((controller.getXRightDriver())*0.25);
+
+
        } else if(controller.getLeftBumperDriver()){
           limelight.setLEDMode(LedMode.kforceOn);
           reposition.LimeLightReposition();
@@ -209,17 +296,7 @@ public class Robot extends TimedRobot {
         drive.RightDrive(0);
       } 
       break;
-
-
-    }
-    /*if (controller.getLeftTriggerDriver() > 0.1){
-      conveyor.conveyorControl(0.75);
-    } else {
-        conveyor.conveyorControl(0);
-    }
-    if (controller.getButtonADriver()){
-      tower.TowerBeltControl(.25);
-    }*/
+    } 
 
     if(controller.getLeftTriggerDriver() < 0.9){
       state = State.DRIVE;
@@ -227,24 +304,36 @@ public class Robot extends TimedRobot {
       state = State.AIM;
     }
 
-    
-
-
     if (controller.getLeftTriggerCoDriver() > 0.1) {
-      tail.intake(0.75);
-      tower.TowerBeltControl(0.8);
-      conveyor.shooterConveyorControl(0.6);
+      tail.intake(-0.75);  
+      tower.TowerBeltControl(-0.90);
+      conveyor.shooterConveyorControl(-0.4);
+
+    /*  if (photosensor.PhotoSensorOne.get() == true) {
+       
+        photosensor.ballDetect = false;
+        photosensor.PhotoSensorOne.close();
+     // if (photosensor.PhotoSensorTwo.get() == true) {
+       
+        photosensor.ballDetectShot = false;
+        //photosensor.PhotoSensorTwo.close(); 
+      } else { 
+       
+      photosensor.ballDetectShot = true;
+      photosensor.ballDetect = true;
+     */  
+  
     } else if (controller.getRightTriggerCoDriver() > 0.1) {
-      tail.intake(-0.75);
-      tower.TowerBeltControl(-0.8);
-      conveyor.shooterConveyorControl(-0.6);
+      tail.intake(0.75);
+      tower.TowerBeltControl(0.90);
+      conveyor.shooterConveyorControl(0.4);
     } else {
       tail.intake(0);
       tower.TowerBeltControl(0);
       conveyor.shooterConveyorControl(0);
-    }
+    } 
 
-    while (controller.getRightBumperCoDriver()) {
+   /* while (controller.getRightBumperCoDriver()) {
       colorWheel.wheelSpinnerControl(0.1);
     }
 
@@ -252,7 +341,6 @@ public class Robot extends TimedRobot {
       while (colorSensor.colorString != "Yellow") {
         colorSensor.senseColor();
         colorWheel.wheelSpinnerControl(0.1);
-
       } 
     } else if (controller.getButtonBCoDriver()) {
         while (colorSensor.colorString != "Blue") {
@@ -274,36 +362,16 @@ public class Robot extends TimedRobot {
       } 
     } else {
         colorWheel.wheelSpinnerControl(0);
-    }
+    } */
 
-    if(photosensor.cellCounter >= 5) {
-      
-      //tail.TailControl(0)
+  }
   
-
-    } 
-
-/*
-     if (controller.getYLeftDriver() > controllerJoystickDeadzone){
-      //drive.RightDrive(.75);
-      drive.LeftDrive(.75);
-    }else if(controller.getYLeftDriver() < controllerJoystickDeadzone * (-1) ){
-      //drive.RightDrive(-0.75);
-      drive.LeftDrive(-0.75);
-    } else {
-      drive.LeftDrive(0);
-     // drive.RightDrive(0);
-    } 
-
-*/
-    
-  } 
-
+   
   
- 
   /**
    * This function is called periodically during test mode.
    */
+
   @Override
   public void testPeriodic() {
   }

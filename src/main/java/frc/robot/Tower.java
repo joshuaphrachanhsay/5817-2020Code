@@ -24,16 +24,21 @@ public class Tower {
     }
  
     TalonSRX towerBelt;
+    TalonSRX towerBelt1;
+
 
     public Tower() {
         towerBelt = new TalonSRX(10);
+        towerBelt1 = new TalonSRX(5);
 
     }
 
     public void TowerBeltControl(double value){
 
         towerBelt.set(ControlMode.PercentOutput, value);
+        towerBelt1.set(ControlMode.PercentOutput, -value);
 
     }
-
 }
+
+   
